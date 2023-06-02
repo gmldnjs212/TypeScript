@@ -1,3 +1,28 @@
+// https://velog.io/@ollehvelog/TypeScript-object-Type-2
+// https://developer-talk.tistory.com/198
+
+// -- any --
+// 타입스크립트에서는 '어떤타입이든' 이라는 의미로 해석
+// 즉, 어떠한 타입도 허용하는 타입
+// 타입을 엄격하게 검사하고 처리하는 ts에서는 치명적인 존재
+
+// 그러면 any 왜씀?
+// any를 쓸 수 밖에 없는 환경이 있다
+
+// function returnAny(message): any {
+//   console.log(message);
+// }
+
+// const any1 = returnAny("리턴은 아무거나")
+
+// any1.toString();
+
+// returnAny()는 단순히 console.log만 출력하는 일을 하고 있다
+// 그래서 returnAny매개변수에는 number타입이나 string타입등 다양한 타입이 
+// 들어올 수 있는 함수이다 
+// 이런 message 매개변수는 정말로 any타입일 수 있다.
+// ts도 message 매개변수의 타입이 any 일 것이라고 추론하거나 모른다고 판단
+
 function returnAny(message: any): any {
   console.log(message);
 }
@@ -6,28 +31,22 @@ const any1 = returnAny("리턴은 아무거나")
 
 any1.toString();
 
-// any
-// - 어떤타입이어도 상관없는 타입
-// - 최대한 쓰지 않는것이 핵심
-// - 컴파일 타임에 타입체크가 정상적으로 이뤄지지 않기때문..
-// - 컴파일 옵션중에는 any를 써야하는데 쓰지않으면 오류를 뱉도록 하는 옵션이 있다
-// -> noImplicitAny (tsconfig.json / strict에 포함되어있다.)
+// 개발자가 message에 any탕비이라고 명시하면 에러가 사라진다
+// 이처럼 ts에서 any타입으로 추론하지만, 개발자가 명시적으로 적지않으면
+// 에러를 뱉는 ts옵션을 "noImplicitAny": true 이라고 한다
+// 우리는 "strict": true로 설정하고 있기 때문에 
+// "noImplicitAny": true도 자동으로 설정되어있다.
 
-// any는 계속해서 개체를 통해 전파된다
-// 결국 모든 편의는 타입안정성을 잃는 대가로 온다는 것을 기억.
-// 타입안정성은 ts를 사용하는 주요 동기중 하나이며,
-// 필요하지 않은경우에도 any를 사용하지 않도록 주의해야함
- 
-let looselyTyped: any = {};
-const d = looselyTyped.a.b.c.d;
-
+// -- avoid leaking any --
 function leakingAny(obj: any){
+  // a타입을 number로 지정하면 여기서부터 누수를 막을 수 있다
   const a: number = obj.num;
-  const b = a + 1; // b가 any가 됨
+  // 변수 b도 any타입에서 number타입으로 바뀌었다
+  const b = a + 1;
   return b;
 }
-const c = leakingAny({num: 0}) // c도 any가 됨
-c.indexOf("0");
 
-// https://velog.io/@ollehvelog/TypeScript-object-Type-2
-// any 뒷부분 다시듣기 
+// c도 any타입에서 number타입으로 바뀌었다 
+const c = leakingAny({num:0});
+// 하지만 c가 number로 규정되어서 나와야하는 것이 우리의 목표
+// const d: string = c.indexOf('0'); / error
