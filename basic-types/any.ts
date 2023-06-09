@@ -37,7 +37,7 @@ any1.toString();
 // 우리는 "strict": true로 설정하고 있기 때문에 
 // "noImplicitAny": true도 자동으로 설정되어있다.
 
-// -- avoid leaking any --
+// -- avoid leaking any -- (any 누수를 막는 방법)
 function leakingAny(obj: any){
   // a타입을 number로 지정하면 여기서부터 누수를 막을 수 있다
   const a: number = obj.num;
