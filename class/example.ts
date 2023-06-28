@@ -6,5 +6,5 @@ class Person {
   }
 }
 
-const p1 = new Person("Mark");
-console.log(p1);
+// const p1 = new Person("Mark");
+// console.log(p1);
